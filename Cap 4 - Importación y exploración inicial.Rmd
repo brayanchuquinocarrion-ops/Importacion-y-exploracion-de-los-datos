@@ -1,0 +1,128 @@
+---
+title: "Cap 4 - Importación y exploración de los datos"
+author: "Brayan Javier Chuquino Carrion"
+date: "2026-10-27"
+output: pdf_document
+toc: true
+toc_depth: 3
+number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 4. Importación y exploración inicial
+
+En este capítulo se presentan los primeros pasos en el uso del software. Si bien RStudio te permite trabajar con distintas fuentes de datos, para este ejercicio se trabajará en base a archivos Excel, ya que es el formato predeterminado en que se descargan los datos desde INFOGOB. 
+
+## 4.1. Importación de archivos de Excel en R
+
+Lo primero es instalar el paquete que permitirá importar archivos de Excel en R. Es importante recordar que solo es necesario instalar el paquete una única vez, ya que para usarlo posteriormente solo será necesario utilizar la función para cargarlo. Existen dos formas bastante sencillas de instalar un paquete en el equipo, la primera es desde un chunk de R y la segunda, desde el interfaz Packages que aparece en la parte inferior izquierda del entorno de RStudio. Para hacerlo desde un R chunk es necesario abrir uno nuevo y escribir la función install.packages(). Luego, dentro de los paréntesis de la función, se escribe entre comillas el nombre del paquete que se desea instalar; en este caso, "readxl". Finalmente, se ejecuta la línea de código y R procederá con la instalación. En la consola se podrá observar el proceso de instalación del paquete, así como la ubicación en la que se instaló.
+
+```{r instalación_de_paquete, eval=FALSE}
+
+install.packages("readxl")
+
+```
+
+Si la instalación se realiza desde Packages, se puede conocer más información acerca del paquete escribiendo su nombre en el buscador. Una vez identificado el paquete, es necesario seleccionar la opción Install. En la nueva ventana se escribe el nombre del paquete, "readxl" para este ejercicio, y se dejan seleccionadas la opción CRAN y la ubicación de descarga predeterminada. Asimismo, se mantiene seleccionado el casillero Install dependencies para que se descarguen los demás paquetes necesarios para que readxl funcione correctamente. Del mismo modo, se puede ver la instalación del paquete desde la consola de la interfaz.
+
+Una vez finalizada la instalación, se debe ejecutar la función library() e indicar el nombre del paquete entre paréntesis. En este caso, el uso de las comillas es opcional y, por convención, es preferible no utilizarlas. Seguidamente, para cargar el archivo correspondiente a los resultados electorales de las elecciones municipales provinciales de 2022, se ejecutan las siguientes líneas de código:
+
+```{r abrir_archivo_de_trabajo, warning=FALSE}
+
+library(readxl)
+
+ERM2022_Resultados_Provinciales <- read_excel("ERM2022_Resultados_Provinciales.xlsx",
+                                       sheet = "Sheet 1")
+
+View (ERM2022_Resultados_Provinciales)
+
+```
+
+La función read_excel() permite importar el archivo Excel, mientras que el operador <- indica que los datos se guardarán en el objeto ERM2022_Resultados_Provinciales. Dentro de la función read_excel(), primero se escribe la ubicación del archivo e inmediatamente después, separado por una coma, se especifica el nombre de la hoja que se desea importar. En este caso, al ser una única hoja dentro del archivo Excel, este paso podría obviarse. Luego de importar el archivo Excel mediante la función read_excel(), es preciso señalar que R guarda los datos en un _tibble_, el cual es un objeto que guarda los datos organizándolos en filas y columnas, del mismo modo que una tabla. Finalmente, la función View() permite visualizar los objetos creados desde la vista de datos de RStudio. Para este ejercicio, el único objeto creado hasta ahora es ERM2022_Resultados_Provinciales.
+
+## 4.2. Exploración inicial de los datos
+
+Una vez importado el archivo de resultados electorales en R, resulta pertinente realizar una exploración inicial de los datos. La primera revisión consistirá en visualizar las primeras observaciones del conjunto de datos. Para ello, se utilizará la función head(), que permite visualizar las primeras seis observaciones.
+
+```{r primeras_observaciones}
+head(ERM2022_Resultados_Provinciales)
+```
+
+Otra función importante para la exploración de los datos es dim(). Esta función brinda información acerca del número de filas y columnas que conforman el conjunto de datos. En este caso, el conjunto de datos está conformado por 1783 filas y 15 columnas.
+
+```{r total_filas_columnas}
+dim(ERM2022_Resultados_Provinciales)
+```
+Para revisar los nombres de las 15 columnas que conforma el conjunto de datos se utilizará la función names().
+```{r nombres_encabezados}
+names(ERM2022_Resultados_Provinciales)
+```
+Otra función importante en la exploración inicial de los datos es str(), que permite observar la estructura general del conjunto de datos. Al ejecutar esta función, se puede observar el tipo de objeto en el que se cargaron los datos —en este caso, un _tibble_—, el número de filas y columnas que lo conforman, los nombres de las columnas, el tipo de dato con que R guardó cada variable, así como algunos valores iniciales.
+
+```{r revisar_estructura}
+str(ERM2022_Resultados_Provinciales)
+```
+Cabe señalar que existen diferentes tipos de datos y clases con los que R puede guardar una variable, cada uno con una nomenclatura específica.
+
+| Tipo de dato en R | Abreviatura |
+|---|---|
+| Texto | chr |
+| Número decimal | num / dbl |
+| Número entero | int |
+| Valor lógico | lgl |
+| Factor | fct |
+| Factor ordenado | ord |
+| Fecha | Date / date |
+| Fecha y hora | POSIXct / dttm |
+
+El primer tipo de dato es el texto (chr), donde cada valor corresponde a una cadena de caracteres. Por otro lado, los valores numéricos pueden almacenarse como decimales (dbl o num) o como enteros (int). Asimismo, se tienen los valores lógicos (lgl), que indican si una condición se cumple o no, por lo cual solo pueden tomar los valores FALSE o TRUE. También se tienen los factores (fct) y los factores ordenados (ord), que corresponden a variables cualitativas con categorías definidas, denominadas levels en R. Un factor es ordenado cuando sigue una secuencia definida, establecida al al crear el factor en R. Por último, se tienen las tipos de datos fecha (Date) y fecha y hora (POSIXct o dttm), que representan un día específico o un día y una hora determinados, respectivamente.
+
+## 4.5. Resumen general de la base
+
+La función summary() es bastante útil para resumir las variables que conforman el conjunto de datos. Los resultados que muestra summary() va a depender del tipo de dato que contiene cada variable. Así, para las variables de texto (chr), muestra Length, que corresponde al número de elementos de la variable; N.unique, que indica el número de valores diferentes; N.blank, que muestra el número de textos vacíos o formados solo por espacios; Min.nchar, que indica la extensión mínima en caracteres de los valores; y Max.nchar, que indica la extensión máxima de caracteres. Cuando existen valores faltantes, también pueden aparecer NAs, que nos indica la cantidad total dentro de la variable.
+
+Con respecto a las variables cuantitativas, summary() señala Min., que corresponde al valor mínimo de cada variable; 1st Qu., que indica el primer cuartil; Median, que corresponde a la mediana y al segundo cuartil; Mean, que señala la media aritmética; 3rd Qu., que corresponde al tercer cuartil; y Max., que representa el valor máximo.
+
+```{r}
+summary(ERM2022_Resultados_Provinciales)
+```
+En caso de que no sea necesario resumir todas las variables del conjunto de datos, se puede utilizar el operador $. Este operador permite seleccionar una columna dentro del conjunto de datos, ya sea esta categórica o numérica. Para el siguiente ejemplo, se tomarán las columnas Región y Votos.
+
+```{r}
+summary(ERM2022_Resultados_Provinciales$Región)
+summary(ERM2022_Resultados_Provinciales$Votos)
+```
+## 4.6. Identificación de problemas en los datos
+
+Es preciso señalar que la base de datos descargada desde INFOGOB presenta la información de manera organizada. No obstante, es menester realizar los procesos de validación correspondientes, ya que permiten identificar posibles inconsistencias y evitar que los análisis posteriores contengan imprecisiones.
+
+Hasta el momento se han utilizado dos funciones que permiten realizar una primera revisión. La primera función es View(), la cual permite observar el conjunto de datos desde la vista de datos de RStudio. En esta ventana puedes buscar, ordenar y filtrar los valores de las columnas. La segunda función útil para la identificación de problemas es summary(), ya que permite observar, de manera general, cómo se distribuyen los datos en cada columna.
+
+Tras la exploración inicial de los datos, es preciso revisar si existen errores o inconsistencias que podrían afectar el análisis. Hasta el momento se han utilizado dos funciones que permiten realizar una primera revisión. La primera es View(), que permite observar el conjunto de datos desde la vista de datos de RStudio. En esta ventana se pueden buscar, ordenar y filtrar los valores de las columnas. La segunda función útil para la identificación de problemas es summary(), que presenta un resumen de las variables según su tipo de dato.
+
+Otras funciones relevantes para  la identificación de problemas es is.na() y ColSums(). La función is.na() identifica si los valores dentro de cada columna corresponde a un valor perdido, el cual RStudio lo registra como _NA_. En caso el valor corresponda con un _NA_ el programa te devolverá TRUE, caso contrario te devolverá FALSE.
+
+Otras funciones relevantes para la identificación de problemas son is.na() y colSums(). La función is.na() identifica los valores perdidos dentro de cada columna, el cual R registra como _NA_. Si el valor evaluado corresponde a un _NA_ la función devuelve TRUE, de lo contrario, devuelve FALSE. Dado que se tiene un gran número de observaciones, la función colSums() permite contar el total de valores perdidos que hay en cada columna del conjunto de datos.
+
+```{r}
+colSums(is.na(ERM2022_Resultados_Provinciales))
+```
+En este caso se observa que solo existen valores faltantes en la columna «Tipo Organización Política», con un total de 392 registros. Tras revisar la base de datos, se pudo observar que estos valores corresponden a registros de votos en blanco y votos nulos, que no pertenecen a ninguna organización política, por lo que no constituyen inconsistencias en los datos.
+
+Otra función relevante es duplicated() y sum(). La función duplicated() permite identificar las observaciones con valores duplicados en todas sus columnas. Del mismo modo que otras funciones mencionadas, si una fila ya apareció previamente, devuelve TRUE; caso contrario, devuelve FALSE. Por su parte, la función sum() cuenta los valores TRUE devueltos por duplicated(). De este modo, se obtiene el número de filas duplicadas, sin contar la primera aparición de cada fila repetida.
+
+```{r}
+sum(duplicated(ERM2022_Resultados_Provinciales))
+```
+
+
+
+
+
+
+
+
+
